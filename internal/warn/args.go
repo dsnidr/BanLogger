@@ -30,6 +30,8 @@ func ValidateAndMapArgs(next gcmd.HandlerFunc) gcmd.HandlerFunc {
 		// Validate profileURL
 		ok, isVanity := validation.ValidateProfileURL(profileURL)
 		if !ok {
+			// If it wasn't a vanity or profile URL, check if it's just a SteamID64
+
 			return fmt.Errorf("Invalid profile URL provided")
 		}
 

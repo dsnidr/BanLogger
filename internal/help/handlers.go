@@ -15,14 +15,14 @@ func CommandHandler(c gcmd.Context) error {
 		Title: "Available Commands",
 		Color: config.EmbedHelpColour,
 		Description: `
-		warn <profileURL> <reason>
+		!warn <profileURL> <reason>
 
-		kick <profileURL> <reason>
+		!kick <profileURL> <reason>
 
-		ban <profileURL> <duration> <reason>
+		!ban <profileURL> <duration> <reason>
 		Duration examples: 1min, 1h, 1d, 1m, 1y, perm
 
-		lookup <profileURL>
+		!lookup <profileURL>
 
 		Valid profileURL formats:
 		https://steamcommunity.com/id/VANITY_URL/
