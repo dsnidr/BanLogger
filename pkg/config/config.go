@@ -7,6 +7,7 @@ const (
 	EmbedKickColour    = 16751872
 	EmbedBanColour     = 16525315
 	EmbedLookupColour  = 3434475
+	EmbedHelpColour    = 9906595
 
 	ReasonMinLen = 1
 	ReasonMaxLen = 128

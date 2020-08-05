@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/sniddunc/banlogger/internal/ban"
+	"github.com/sniddunc/banlogger/internal/help"
 	"github.com/sniddunc/banlogger/internal/kick"
 	"github.com/sniddunc/banlogger/internal/lookup"
 	"github.com/sniddunc/banlogger/internal/warn"
@@ -16,7 +17,7 @@ var cmdBase gcmd.Base
 func Setup(db *sql.DB) {
 	// Initialize the command base for use by the bot
 	cmdBase = gcmd.New("!")
-	cmdBase.UnknownCommandMessage = "Unknown command. Do /help for a list of commands."
+	cmdBase.UnknownCommandMessage = "Unknown command. Do !help for a list of commands."
 
 	// Attach database
 	cmdBase.Set("db", db)
@@ -29,6 +30,13 @@ func Setup(db *sql.DB) {
 	}
 	warnCommand.Use(warn.ValidateAndMapArgs)
 	cmdBase.Register(warnCommand)
+
+	// Register help command
+	cmdBase.Register(gcmd.Command{
+		Name:    "help",
+		Usage:   "help",
+		Handler: help.CommandHandler,
+	})
 
 	// Register kick command
 	kickCommand := gcmd.Command{
