@@ -6,6 +6,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sniddunc/banlogger/pkg/config"
+	"github.com/sniddunc/banlogger/pkg/helpers"
 	"github.com/sniddunc/gcmd"
 )
 
@@ -35,7 +36,7 @@ func CommandHandler(c gcmd.Context) error {
 
 	s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
 		Title:       "Kicked " + kick.PlayerID + " for " + kick.Reason,
-		Description: "Kicked by: " + m.Author.Username,
+		Description: "Kicked by: " + m.Author.Username + "\n" + helpers.GetInfractionString(db, steamID),
 		Color:       config.EmbedKickColour,
 		Footer: &discordgo.MessageEmbedFooter{
 			Text: kick.Staff,
