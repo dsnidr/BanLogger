@@ -3,6 +3,9 @@ package kick
 import (
 	"context"
 	"database/sql"
+	"fmt"
+
+	"github.com/sniddunc/banlogger/pkg/logging"
 )
 
 // Kick represents a kick given to a player
@@ -24,6 +27,10 @@ func Insert(db *sql.DB, kick Kick) error {
 	if err != nil {
 		return err
 	}
+
+	logging.Info("kick/models.go",
+		fmt.Sprintf("New kick inserted into the database.\n\tPlayerID: %s | Reason: %s | Staff: %s | Timestamp: %d",
+			kick.PlayerID, kick.Reason, kick.Staff, kick.Timestamp))
 
 	return nil
 }

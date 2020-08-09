@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/sniddunc/banlogger/internal/steam"
+	"github.com/sniddunc/banlogger/pkg/logging"
 	"github.com/sniddunc/banlogger/pkg/validation"
 	"github.com/sniddunc/gcmd"
 )
@@ -35,6 +36,8 @@ func ValidateAndMapArgs(next gcmd.HandlerFunc) gcmd.HandlerFunc {
 
 		// Map data to context store
 		c.Set("steamID", steamID)
+
+		logging.Info("lookup/args.go", fmt.Sprintf("Lookup command passed arguments check. steamID: %s", steamID))
 
 		return next(c)
 	}

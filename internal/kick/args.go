@@ -6,6 +6,7 @@ import (
 
 	"github.com/sniddunc/banlogger/internal/steam"
 	"github.com/sniddunc/banlogger/pkg/config"
+	"github.com/sniddunc/banlogger/pkg/logging"
 	"github.com/sniddunc/banlogger/pkg/validation"
 	"github.com/sniddunc/gcmd"
 )
@@ -44,6 +45,8 @@ func ValidateAndMapArgs(next gcmd.HandlerFunc) gcmd.HandlerFunc {
 		// Map data to context store
 		c.Set("reason", reason)
 		c.Set("steamID", steamID)
+
+		logging.Info("kick/args.go", fmt.Sprintf("Kick command passed arguments check. steamID: %s | reason: %s", steamID, reason))
 
 		return next(c)
 	}

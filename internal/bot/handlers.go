@@ -1,10 +1,12 @@
 package bot
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/sniddunc/banlogger/pkg/config"
+	"github.com/sniddunc/banlogger/pkg/logging"
 )
 
 // MessageReceiveHandler is the handler for when the bot receives a message
@@ -18,6 +20,9 @@ func MessageReceiveHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == s.State.User.ID {
 		return
 	}
+
+	// Log received message
+	logging.Info("bot/handlers.go", fmt.Sprintf("Message received from %s (%s):\n\tMessage: '%s'", m.Author.Username, m.Author.ID, m.Content))
 
 	// Pass along the session and message pointers to the command handler
 	extraStore := map[string]interface{}{

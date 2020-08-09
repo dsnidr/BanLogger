@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -13,6 +12,7 @@ import (
 	"github.com/joho/godotenv"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/sniddunc/banlogger/internal/bot"
+	"github.com/sniddunc/banlogger/pkg/logging"
 )
 
 func main() {
@@ -60,7 +60,7 @@ func main() {
 		log.Fatalf("Error opening connection to discord. Error: %v", err)
 	}
 
-	fmt.Println("Bot running. Press CTRL+C to exit.")
+	logging.Info("main.go", "Bot started")
 
 	// Wait for exit signal
 	sc := make(chan os.Signal, 1)

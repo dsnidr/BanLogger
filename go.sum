@@ -10,6 +10,8 @@ github.com/mattn/go-sqlite3 v1.14.0 h1:mLyGNKR8+Vv9CAU7PphKa2hkEqxxhn8i32J6FPj1/
 github.com/mattn/go-sqlite3 v1.14.0/go.mod h1:JIl7NbARA7phWnGvh0LKTyg7S9BA+6gx71ShQilpsus=
 github.com/sniddunc/gcmd v0.1.21 h1:Eq6/kJf5P64c5WislMWGg4qlD8akN2CdbpN75XFgaFM=
 github.com/sniddunc/gcmd v0.1.21/go.mod h1:bpt7J6NBqIG9RpnnD55+dIMlEHHemMYMFECeascrC8w=
+github.com/sniddunc/gcmd v0.1.22 h1:Dwtx92tjBO66qkU4HZllaiLMOzCaT3JQNSFhrB4+Ra8=
+github.com/sniddunc/gcmd v0.1.22/go.mod h1:bpt7J6NBqIG9RpnnD55+dIMlEHHemMYMFECeascrC8w=
 golang.org/x/crypto v0.0.0-20181030102418-4d3f4d9ffa16 h1:y6ce7gCWtnH+m3dCjzQ1PCuwl28DDIc3VNnvY29DlIA=
 golang.org/x/crypto v0.0.0-20181030102418-4d3f4d9ffa16/go.mod h1:6SG95UA2DQfeDnfUPMdvaQW0Q7yPrPDi9nlGo2tz2b4=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2 h1:VklqNMn3ovrHsnt90PveolxSbWFaJdECFbxSq0Mqo2M=

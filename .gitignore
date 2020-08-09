@@ -16,3 +16,6 @@
 
 .env
 *.db
+
+logs/
+*.log

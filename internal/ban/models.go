@@ -3,6 +3,9 @@ package ban
 import (
 	"context"
 	"database/sql"
+	"fmt"
+
+	"github.com/sniddunc/banlogger/pkg/logging"
 )
 
 // Ban represents a ban given to a player
@@ -25,6 +28,10 @@ func Insert(db *sql.DB, ban Ban) error {
 	if err != nil {
 		return err
 	}
+
+	logging.Info("ban/models.go",
+		fmt.Sprintf("New ban inserted into the database.\n\tPlayerID: %s | Duration: %s | Reason: %s | Staff: %s | Timestamp: %d",
+			ban.PlayerID, ban.Duration, ban.Reason, ban.Staff, ban.Timestamp))
 
 	return nil
 }

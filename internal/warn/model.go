@@ -3,6 +3,9 @@ package warn
 import (
 	"context"
 	"database/sql"
+	"fmt"
+
+	"github.com/sniddunc/banlogger/pkg/logging"
 )
 
 // Warning represents a warning given to a player
@@ -24,6 +27,10 @@ func Insert(db *sql.DB, warning Warning) error {
 	if err != nil {
 		return err
 	}
+
+	logging.Info("warning/models.go",
+		fmt.Sprintf("New warning inserted into the database.\n\tPlayerID: %s | Reason: %s | Staff: %s | Timestamp: %d",
+			warning.PlayerID, warning.Reason, warning.Staff, warning.Timestamp))
 
 	return nil
 }

@@ -6,6 +6,7 @@ import (
 
 	"github.com/sniddunc/banlogger/internal/steam"
 	"github.com/sniddunc/banlogger/pkg/config"
+	"github.com/sniddunc/banlogger/pkg/logging"
 	"github.com/sniddunc/banlogger/pkg/validation"
 	"github.com/sniddunc/gcmd"
 )
@@ -54,6 +55,8 @@ func ValidateAndMapArgs(next gcmd.HandlerFunc) gcmd.HandlerFunc {
 		c.Set("reason", reason)
 		c.Set("duration", duration)
 		c.Set("steamID", steamID)
+
+		logging.Info("ban/args.go", fmt.Sprintf("Ban command passed arguments check. steamID: %s | duration: %s | reason: %s", steamID, duration, reason))
 
 		return next(c)
 	}
