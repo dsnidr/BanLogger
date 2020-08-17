@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	vanityURLRegex  = "^https:\\/\\/steamcommunity\\.com\\/id\\/[a-zA-Z0-9_]+\\/?$"
+	vanityURLRegex  = "^https:\\/\\/steamcommunity\\.com\\/id\\/[a-zA-Z0-9_-]+\\/?$"
 	profileURLRegex = "^https:\\/\\/steamcommunity\\.com\\/profiles\\/[0-9]{17,17}\\/?$"
 )
 
