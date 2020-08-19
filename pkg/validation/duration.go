@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	durationRegex = "^([0-9]{1,5}([hdmy]|min))$|^perm$"
+	durationRegex = "^([0-9]{1,5}([hdwmy]|min))$|^perm$"
 )
 
 // ValidateDuration takes in a string and verifies that it's in the expected format.

@@ -20,7 +20,7 @@ func CommandHandler(c gcmd.Context) error {
 		!kick <profileURL> <reason>
 
 		!ban <profileURL> <duration> <reason>
-		Duration examples: 1min, 1h, 1d, 1m, 1y, perm
+		Duration examples: 1min, 1h, 1d, 1w, 1m, 1y, perm
 
 		!lookup <profileURL>
 
