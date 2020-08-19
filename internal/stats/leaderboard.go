@@ -1,6 +1,8 @@
 package stats
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
 // PlayerInfractionRecord holds infraction stats
 type PlayerInfractionRecord struct {
@@ -14,37 +16,44 @@ type PlayerInfractionRecord struct {
 // GetPlayerWithMostInfractions retrieves the player with the highest number of infractions
 func GetPlayerWithMostInfractions(db *sql.DB) (PlayerInfractionRecord, error) {
 	query := `
-	SELECT 
-		top.*,
-		wc.WarningCount,
-		kc.KickCount,
-		bc.BanCount
-	FROM (
+	SELECT * FROM (
 		SELECT
-			w.PlayerID,
-			COUNT(w.PlayerID) as InfractionCount
+			w.PlayerID
 		FROM Warning w
-		INNER JOIN Kick k ON k.PlayerID = w.PlayerID
-		INNER JOIN Ban b ON b.PlayerID = w.PlayerID
-	) top
-	INNER JOIN (
-		SELECT PlayerID, COUNT(1) AS WarningCount FROM Warning
-	) wc ON wc.PlayerID = top.PlayerID
-	INNER JOIN (
-		SELECT PlayerID, COUNT(1) AS KickCount FROM Kick
-	) kc ON kc.PlayerID = top.PlayerID
-	INNER JOIN (
-		SELECT PlayerID, COUNT(1) AS BanCount FROM Kick
-	) bc ON bc.PlayerID = top.PlayerID
-	`
+		INNER JOIN Kick k ON w.PlayerID = k.PlayerID 
+		INNER JOIN Ban b ON w.PlayerID = b.PlayerID AND k.PlayerID = b.PlayerID
+	) common
+	GROUP BY common.PlayerID ORDER BY COUNT(PlayerID) DESC LIMIT 1
+`
 
 	row := db.QueryRow(query)
 
 	var record PlayerInfractionRecord
 
-	err := row.Scan(&record.PlayerID, &record.TotalInfractions, &record.WarnCount, &record.KickCount, &record.BanCount)
+	err := row.Scan(&record.PlayerID)
 	if err != nil {
 		return PlayerInfractionRecord{}, err
 	}
+
+	warningCount, err := GetWarnCount(db, record.PlayerID)
+	if err != nil {
+		return PlayerInfractionRecord{}, err
+	}
+
+	kickCount, err := GetKickCount(db, record.PlayerID)
+	if err != nil {
+		return PlayerInfractionRecord{}, err
+	}
+
+	banCount, err := GetBanCount(db, record.PlayerID)
+	if err != nil {
+		return PlayerInfractionRecord{}, err
+	}
+
+	record.TotalInfractions = warningCount + kickCount + banCount
+	record.WarnCount = warningCount
+	record.KickCount = kickCount
+	record.BanCount = banCount
+
 	return record, err
 }
