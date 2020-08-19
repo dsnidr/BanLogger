@@ -8,6 +8,7 @@ import (
 	"github.com/sniddunc/banlogger/internal/commands/kick"
 	"github.com/sniddunc/banlogger/internal/commands/lookup"
 	"github.com/sniddunc/banlogger/internal/commands/stats"
+	"github.com/sniddunc/banlogger/internal/commands/top"
 	"github.com/sniddunc/banlogger/internal/commands/warn"
 	"github.com/sniddunc/gcmd"
 )
@@ -73,4 +74,12 @@ func Setup(db *sql.DB) {
 		Handler: stats.CommandHandler,
 	}
 	cmdBase.Register(statsCommand)
+
+	// Register top command
+	topCommand := gcmd.Command{
+		Name:    "top",
+		Usage:   "top",
+		Handler: top.CommandHandler,
+	}
+	cmdBase.Register(topCommand)
 }
