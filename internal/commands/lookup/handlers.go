@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/sniddunc/banlogger/internal/steam"
+	"github.com/sniddunc/banlogger/pkg/logging"
 	"github.com/sniddunc/gcmd"
 )
 
@@ -19,6 +21,12 @@ func CommandHandler(c gcmd.Context) error {
 	record, err := GetRecord(db, steamID)
 	if err != nil {
 		return err
+	}
+
+	summary, err := steam.GetUserSummary(record.PlayerID)
+	if err != nil {
+		logging.Info("loookup/handlers.go", fmt.Sprintf("GetUserSummary returned an error: %v", err))
+		return fmt.Errorf("Could not fetch record")
 	}
 
 	// Build record display
@@ -55,9 +63,12 @@ func CommandHandler(c gcmd.Context) error {
 
 	recordDisplay := fmt.Sprintf("**Warnings:**\n%s\n**Kicks:**:\n%s\n**Bans:**\n%s\n", warningDisplay, kickDisplay, banDisplay)
 	s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
-		Title:       "Showing " + record.PlayerID + "'s record",
+		Title:       "Showing " + summary.ProfileName + "'s record",
 		Color:       3434475,
-		Description: recordDisplay,
+		Description: recordDisplay + "\nProfile: " + summary.ProfileURL,
+		Footer: &discordgo.MessageEmbedFooter{
+			Text: "SteamID: " + record.PlayerID,
+		},
 	})
 
 	return nil
