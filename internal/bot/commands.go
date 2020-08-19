@@ -3,11 +3,12 @@ package bot
 import (
 	"database/sql"
 
-	"github.com/sniddunc/banlogger/internal/ban"
-	"github.com/sniddunc/banlogger/internal/help"
-	"github.com/sniddunc/banlogger/internal/kick"
-	"github.com/sniddunc/banlogger/internal/lookup"
-	"github.com/sniddunc/banlogger/internal/warn"
+	"github.com/sniddunc/banlogger/internal/commands/ban"
+	"github.com/sniddunc/banlogger/internal/commands/help"
+	"github.com/sniddunc/banlogger/internal/commands/kick"
+	"github.com/sniddunc/banlogger/internal/commands/lookup"
+	"github.com/sniddunc/banlogger/internal/commands/stats"
+	"github.com/sniddunc/banlogger/internal/commands/warn"
 	"github.com/sniddunc/gcmd"
 )
 
@@ -59,9 +60,17 @@ func Setup(db *sql.DB) {
 	// Register lookup command
 	lookupCommand := gcmd.Command{
 		Name:    "lookup",
-		Usage:   "ban <profileURL>",
+		Usage:   "loookup <profileURL>",
 		Handler: lookup.CommandHandler,
 	}
 	lookupCommand.Use(lookup.ValidateAndMapArgs)
 	cmdBase.Register(lookupCommand)
+
+	// Register stats command
+	statsCommand := gcmd.Command{
+		Name:    "stats",
+		Usage:   "stats",
+		Handler: stats.CommandHandler,
+	}
+	cmdBase.Register(statsCommand)
 }

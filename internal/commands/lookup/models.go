@@ -4,9 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/sniddunc/banlogger/internal/ban"
-	"github.com/sniddunc/banlogger/internal/kick"
-	"github.com/sniddunc/banlogger/internal/warn"
+	"github.com/sniddunc/banlogger/internal/commands/ban"
+	"github.com/sniddunc/banlogger/internal/commands/kick"
+	"github.com/sniddunc/banlogger/internal/commands/warn"
 	"github.com/sniddunc/banlogger/pkg/logging"
 )
 
