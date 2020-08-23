@@ -1,4 +1,4 @@
-package steam
+package live
 
 import (
 	"encoding/json"
@@ -7,33 +7,16 @@ import (
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/sniddunc/BanLogger/internal/banlogger"
 )
 
-type steamVanityResponseWrapper struct {
-	Response steamVanityResponse `json:"response"`
-}
-
-type steamVanityResponse struct {
-	SteamID string `json:"steamid"`
-}
-
-type steamSummaryResponseWrapper struct {
-	Response steamSummaryResponse `json:"response"`
-}
-
-type steamSummaryResponse struct {
-	Players []PlayerSummary `json:"players"`
-}
-
-// PlayerSummary represents data retrieved from a summary call to steam's API
-type PlayerSummary struct {
-	ProfileName string `json:"personaname"`
-	ProfileURL  string `json:"profileurl"`
-	AvatarURL   string `json:"avatarmedium"`
-}
+// SteamService is the struct which we attach functions to in order to
+// satisfy the requirements of banlogger.SteamService.
+type SteamService struct{}
 
 // GetSteamID retrieves a player's SteamID64 from either their profile URL, or their vanity URL
-func GetSteamID(resolveVanity bool, url string) (string, error) {
+func (s *SteamService) GetSteamID(resolveVanity bool, url string) (string, error) {
 	// Remove trailing slash if one is present
 	if strings.HasSuffix(url, "/") {
 		url = strings.TrimSuffix(url, "/")
@@ -53,7 +36,7 @@ func GetSteamID(resolveVanity bool, url string) (string, error) {
 			return "", fmt.Errorf("Could not resolve vanity URL. Please try again later")
 		}
 
-		var result steamVanityResponseWrapper
+		var result banlogger.SteamVanityResponseWrapper
 		err = json.NewDecoder(res.Body).Decode(&result)
 		if err != nil {
 			log.Println(err)
@@ -67,25 +50,25 @@ func GetSteamID(resolveVanity bool, url string) (string, error) {
 }
 
 // GetUserSummary takes in a user's steam ID and gets their profile summary
-func GetUserSummary(steamID string) (PlayerSummary, error) {
+func (s *SteamService) GetUserSummary(steamID string) (banlogger.SteamPlayerSummary, error) {
 	reqURL := fmt.Sprintf("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=%s&steamids=%s", os.Getenv("STEAM_API_KEY"), steamID)
 
 	res, err := http.Get(reqURL)
 	if err != nil {
-		return PlayerSummary{}, fmt.Errorf("Could not get profile summary")
+		return banlogger.SteamPlayerSummary{}, fmt.Errorf("Could not get profile summary")
 	}
 
-	var result steamSummaryResponseWrapper
+	var result banlogger.SteamSummaryResponseWrapper
 	err = json.NewDecoder(res.Body).Decode(&result)
 	if err != nil {
 		log.Println(err)
-		return PlayerSummary{}, fmt.Errorf("Could not decode API response")
+		return banlogger.SteamPlayerSummary{}, fmt.Errorf("Could not decode API response")
 	}
 
 	summaries := result.Response.Players
 
 	if len(summaries) == 0 {
-		return PlayerSummary{}, fmt.Errorf("Could not get profile summary")
+		return banlogger.SteamPlayerSummary{}, fmt.Errorf("Could not get profile summary")
 	}
 
 	return summaries[0], nil

@@ -1,54 +1,51 @@
-package ban
+package sqlite
 
 import (
 	"context"
 	"database/sql"
 	"fmt"
 
-	"github.com/sniddunc/banlogger/pkg/logging"
+	"github.com/sniddunc/BanLogger/internal/banlogger"
+	"github.com/sniddunc/BanLogger/pkg/logging"
 )
 
-// Ban represents a ban given to a player
-type Ban struct {
-	ID        int64
-	PlayerID  string
-	Duration  string
-	Reason    string
-	Staff     string
-	Timestamp int64
+// BanService is the struct which we attach functions to in order to
+// satisfy the requirements of banlogger.BanService.
+type BanService struct {
+	DB *sql.DB
 }
 
-// Insert inserts a new ban into the database
-func Insert(db *sql.DB, ban Ban) error {
+// CreateBan inserts a provided ban struct into the sqlite database
+func (s *BanService) CreateBan(ban banlogger.Ban) error {
 	query := "INSERT INTO Ban (PlayerID, Duration, Reason, Staff, Timestamp) VALUES (?, ?, ?, ?, ?);"
 
-	_, err := db.ExecContext(context.Background(), query,
+	_, err := s.DB.ExecContext(context.Background(), query,
 		ban.PlayerID, ban.Duration, ban.Reason, ban.Staff, ban.Timestamp)
 
 	if err != nil {
 		return err
 	}
 
-	logging.Info("ban/models.go",
+	logging.Info("sqlite/ban.go",
 		fmt.Sprintf("New ban inserted into the database.\n\tPlayerID: %s | Duration: %s | Reason: %s | Staff: %s | Timestamp: %d",
 			ban.PlayerID, ban.Duration, ban.Reason, ban.Staff, ban.Timestamp))
 
 	return nil
 }
 
-// FindByPlayerID finds all bans records for a given player
-func FindByPlayerID(db *sql.DB, playerID string) ([]Ban, error) {
+// GetBansByPlayerID finds all bans given to a provided player
+func (s *BanService) GetBansByPlayerID(playerID string) ([]banlogger.Ban, error) {
 	query := "SELECT ID, PlayerID, Duration, Reason, Staff, Timestamp FROM Ban WHERE PlayerID = ?;"
 
-	rows, err := db.QueryContext(context.Background(), query, playerID)
+	rows, err := s.DB.QueryContext(context.Background(), query, playerID)
 	if err != nil {
 		return nil, err
 	}
 
-	bans := []Ban{}
+	bans := []banlogger.Ban{}
 
 	for rows.Next() {
-		ban := Ban{}
+		ban := banlogger.Ban{}
 
 		err = rows.Scan(&ban.ID, &ban.PlayerID, &ban.Duration, &ban.Reason, &ban.Staff, &ban.Timestamp)
 		if err != nil {

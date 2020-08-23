@@ -1,13 +1,13 @@
-package help
+package bot
 
 import (
 	"github.com/bwmarrin/discordgo"
-	"github.com/sniddunc/banlogger/pkg/config"
+	"github.com/sniddunc/BanLogger/pkg/config"
 	"github.com/sniddunc/gcmd"
 )
 
-// CommandHandler is the command handler for the warn command
-func CommandHandler(c gcmd.Context) error {
+// HelpCommandHandler is the command handler for the help command
+func (bot *Bot) HelpCommandHandler(c gcmd.Context) error {
 	s := c.Get("session").(*discordgo.Session)
 	m := c.Get("message").(*discordgo.MessageCreate)
 
@@ -15,14 +15,14 @@ func CommandHandler(c gcmd.Context) error {
 		Title: "Available Commands",
 		Color: config.EmbedHelpColour,
 		Description: `
+		!help
 		!warn <profileURL> <reason>
-
 		!kick <profileURL> <reason>
-
 		!ban <profileURL> <duration> <reason>
-		Duration examples: 1min, 1h, 1d, 1w, 1m, 1y, perm
-
+		Duration examples: 1min, 3h, 1d, 10w, 1m, 2y, perm
 		!lookup <profileURL>
+		!top
+		!stats
 
 		Valid profileURL formats:
 		https://steamcommunity.com/id/VANITY_URL/

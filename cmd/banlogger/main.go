@@ -8,11 +8,12 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/joho/godotenv"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/sniddunc/banlogger/internal/bot"
-	"github.com/sniddunc/banlogger/pkg/logging"
+	"github.com/sniddunc/BanLogger/internal/bot"
+	"github.com/sniddunc/BanLogger/internal/steam/live"
+	"github.com/sniddunc/BanLogger/internal/storage/sqlite"
+	"github.com/sniddunc/BanLogger/pkg/logging"
 )
 
 func main() {
@@ -22,7 +23,7 @@ func main() {
 	}
 
 	// Check existence of env variables
-	botToken, ok := os.LookupEnv("DISCORD_BOT_TOKEN")
+	_, ok := os.LookupEnv("DISCORD_BOT_TOKEN")
 	if !ok {
 		log.Fatalf("Environment variables DISCORD_BOT_TOKEN is required, but is not currently set. Exiting...")
 	}
@@ -37,30 +38,42 @@ func main() {
 		log.Fatalf("Environment variables CHANNEL_ID is required, but is not currently set. Exiting...")
 	}
 
-	// Setup database
+	// Database setup
 	db := setupDatabase()
+	defer db.Close()
 
-	// Setup bot functionality (commands, etc)
-	bot.Setup(db)
-
-	dg, err := discordgo.New("Bot " + botToken)
-	if err != nil {
-		log.Fatalf("Could not create discord bot. Error: %v", err)
+	// Services setup
+	steamService := &live.SteamService{}
+	warningService := &sqlite.WarningService{DB: db}
+	kickService := &sqlite.KickService{DB: db}
+	banService := &sqlite.BanService{DB: db}
+	statService := &sqlite.StatService{
+		DB:             db,
+		WarningService: warningService,
+		KickService:    kickService,
+		BanService:     banService,
 	}
 
-	// Specify intents
-	dg.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsGuildMessages)
+	// Bot setup
+	bot := bot.Bot{
+		SteamService:   steamService,
+		WarningService: warningService,
+		KickService:    kickService,
+		BanService:     banService,
+		StatService:    statService,
+	}
+	dg, err := bot.Setup()
+	if err != nil {
+		log.Fatalf("Could not setup bot. Error: %v", err)
+	}
 
-	// Setup event handlers
-	dg.AddHandler(bot.MessageReceiveHandler)
-
-	// Open socket to discord
+	// Open bot socket
 	err = dg.Open()
 	if err != nil {
-		log.Fatalf("Error opening connection to discord. Error: %v", err)
+		log.Fatalf("Error opening a connection to discord. Error: %v", err)
 	}
 
-	logging.Info("main.go", "Bot started")
+	logging.Info("main.go", "Bot connected")
 
 	// Wait for exit signal
 	sc := make(chan os.Signal, 1)
