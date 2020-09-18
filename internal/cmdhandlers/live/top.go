@@ -1,4 +1,4 @@
-package bot
+package live
 
 import (
 	"fmt"
@@ -9,20 +9,22 @@ import (
 	"github.com/sniddunc/gcmd"
 )
 
-// TopCommandHandler is the command handler for the warn command
-func (bot *Bot) TopCommandHandler(c gcmd.Context) error {
+// TopHandler is the command handler for the warn command
+func (handlers *CommandHandlers) TopHandler(c gcmd.Context) error {
+	const tag = "cmdhandlers.live.TopHandler"
+
 	s := c.Get("session").(*discordgo.Session)
 	m := c.Get("message").(*discordgo.MessageCreate)
 
-	record, err := bot.StatService.GetTopOffender()
+	record, err := handlers.StatService.GetTopOffender()
 	if err != nil {
-		logging.Info("bot/top.go", fmt.Sprintf("GetPlayerWithMostInfractions returned an error: %v", err))
+		logging.Info(tag, fmt.Sprintf("GetPlayerWithMostInfractions returned an error: %v", err))
 		return fmt.Errorf("Could not get top player")
 	}
 
-	summary, err := bot.SteamService.GetUserSummary(record.PlayerID)
+	summary, err := handlers.SteamService.GetUserSummary(record.PlayerID)
 	if err != nil {
-		logging.Info("bot/top.go", fmt.Sprintf("GetUserSummary returned an error: %v", err))
+		logging.Info(tag, fmt.Sprintf("GetUserSummary returned an error: %v", err))
 		return fmt.Errorf("Could not get top player")
 	}
 

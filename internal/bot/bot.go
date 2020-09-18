@@ -13,12 +13,9 @@ import (
 
 // Bot holds all our services to be used in command handlers
 type Bot struct {
-	cmdBase        gcmd.Base
-	SteamService   banlogger.SteamService
-	WarningService banlogger.WarningService
-	KickService    banlogger.KickService
-	BanService     banlogger.BanService
-	StatService    banlogger.StatService
+	CmdBase         gcmd.Base
+	SteamService    banlogger.SteamService
+	CommandHandlers banlogger.CommandHandlers
 }
 
 // Setup initializes everything the bot needs to run
@@ -31,7 +28,7 @@ func (bot *Bot) Setup() (*discordgo.Session, error) {
 	helpCommand := gcmd.Command{
 		Name:    "help",
 		Usage:   "!help",
-		Handler: bot.HelpCommandHandler,
+		Handler: bot.CommandHandlers.HelpHandler,
 	}
 	cmdBase.Register(helpCommand)
 
@@ -39,7 +36,7 @@ func (bot *Bot) Setup() (*discordgo.Session, error) {
 	warnCommand := gcmd.Command{
 		Name:    "warn",
 		Usage:   "!warn <profileURL> <reason>",
-		Handler: bot.WarnCommandHandler,
+		Handler: bot.CommandHandlers.WarnHandler,
 	}
 	warnCommand.Use(bot.ParseWarnArgs)
 	cmdBase.Register(warnCommand)
@@ -48,7 +45,7 @@ func (bot *Bot) Setup() (*discordgo.Session, error) {
 	kickCommand := gcmd.Command{
 		Name:    "kick",
 		Usage:   "!kick <profileURL> <reason>",
-		Handler: bot.KickCommandHandler,
+		Handler: bot.CommandHandlers.KickHandler,
 	}
 	kickCommand.Use(bot.ParseKickArgs)
 	cmdBase.Register(kickCommand)
@@ -57,7 +54,7 @@ func (bot *Bot) Setup() (*discordgo.Session, error) {
 	banCommand := gcmd.Command{
 		Name:    "ban",
 		Usage:   "!ban <profileURL> <reason>",
-		Handler: bot.BanCommandHandler,
+		Handler: bot.CommandHandlers.BanHandler,
 	}
 	banCommand.Use(bot.ParseBanArgs)
 	cmdBase.Register(banCommand)
@@ -66,7 +63,7 @@ func (bot *Bot) Setup() (*discordgo.Session, error) {
 	lookupCommand := gcmd.Command{
 		Name:    "lookup",
 		Usage:   "!lookup <profileURL>",
-		Handler: bot.LookupCommandHandler,
+		Handler: bot.CommandHandlers.LookupHandler,
 	}
 	lookupCommand.Use(bot.ParseLookupArgs)
 	cmdBase.Register(lookupCommand)
@@ -75,7 +72,7 @@ func (bot *Bot) Setup() (*discordgo.Session, error) {
 	statsCommand := gcmd.Command{
 		Name:    "stats",
 		Usage:   "!stats",
-		Handler: bot.StatsCommandHandler,
+		Handler: bot.CommandHandlers.StatsHandler,
 	}
 	cmdBase.Register(statsCommand)
 
@@ -83,11 +80,11 @@ func (bot *Bot) Setup() (*discordgo.Session, error) {
 	topCommand := gcmd.Command{
 		Name:    "top",
 		Usage:   "!top",
-		Handler: bot.TopCommandHandler,
+		Handler: bot.CommandHandlers.TopHandler,
 	}
 	cmdBase.Register(topCommand)
 
-	bot.cmdBase = cmdBase
+	bot.CmdBase = cmdBase
 
 	// Discordgo setup
 	dg, err := discordgo.New("Bot " + os.Getenv("DISCORD_BOT_TOKEN"))
@@ -125,7 +122,7 @@ func (bot *Bot) MessageReceivedHandler(s *discordgo.Session, m *discordgo.Messag
 		"message": m,
 	}
 
-	_, err := bot.cmdBase.HandleCommand(m.Content, extraStore)
+	_, err := bot.CmdBase.HandleCommand(m.Content, extraStore)
 	if err != nil {
 		embed := &discordgo.MessageEmbed{
 			Title:       err.Error(),

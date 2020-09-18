@@ -1,4 +1,4 @@
-package bot
+package live
 
 import (
 	"github.com/bwmarrin/discordgo"
@@ -6,8 +6,8 @@ import (
 	"github.com/sniddunc/gcmd"
 )
 
-// HelpCommandHandler is the command handler for the help command
-func (bot *Bot) HelpCommandHandler(c gcmd.Context) error {
+// HelpHandler is the command handler for the help command
+func (handlers *CommandHandlers) HelpHandler(c gcmd.Context) error {
 	s := c.Get("session").(*discordgo.Session)
 	m := c.Get("message").(*discordgo.MessageCreate)
 

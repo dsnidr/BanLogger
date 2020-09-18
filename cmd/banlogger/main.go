@@ -11,7 +11,8 @@ import (
 	"github.com/joho/godotenv"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/sniddunc/BanLogger/internal/bot"
-	"github.com/sniddunc/BanLogger/internal/steam/live"
+	"github.com/sniddunc/BanLogger/internal/cmdhandlers/live"
+	steamlive "github.com/sniddunc/BanLogger/internal/steam/live"
 	"github.com/sniddunc/BanLogger/internal/storage/sqlite"
 	"github.com/sniddunc/BanLogger/pkg/logging"
 )
@@ -43,7 +44,7 @@ func main() {
 	defer db.Close()
 
 	// Services setup
-	steamService := &live.SteamService{}
+	steamService := &steamlive.SteamService{}
 	warningService := &sqlite.WarningService{DB: db}
 	kickService := &sqlite.KickService{DB: db}
 	banService := &sqlite.BanService{DB: db}
@@ -55,13 +56,19 @@ func main() {
 	}
 
 	// Bot setup
-	bot := bot.Bot{
+	commandHandlers := &live.CommandHandlers{
 		SteamService:   steamService,
 		WarningService: warningService,
 		KickService:    kickService,
 		BanService:     banService,
 		StatService:    statService,
 	}
+
+	bot := bot.Bot{
+		SteamService:    steamService,
+		CommandHandlers: commandHandlers,
+	}
+
 	dg, err := bot.Setup()
 	if err != nil {
 		log.Fatalf("Could not setup bot. Error: %v", err)

@@ -1,4 +1,4 @@
-package bot
+package live
 
 import (
 	"fmt"
@@ -9,26 +9,28 @@ import (
 	"github.com/sniddunc/gcmd"
 )
 
-// StatsCommandHandler is the command handler for the warn command
-func (bot *Bot) StatsCommandHandler(c gcmd.Context) error {
+// StatsHandler is the command handler for the warn command
+func (handlers *CommandHandlers) StatsHandler(c gcmd.Context) error {
+	const tag = "cmdhandlers.live.StatsHandler"
+
 	s := c.Get("session").(*discordgo.Session)
 	m := c.Get("message").(*discordgo.MessageCreate)
 
-	totalWarnings, err := bot.StatService.GetTotalWarningCount()
+	totalWarnings, err := handlers.StatService.GetTotalWarningCount()
 	if err != nil {
-		logging.Info("bot/stats.go", fmt.Sprintf("GetTotalWarningCount returned an error: %v", err))
+		logging.Info(tag, fmt.Sprintf("GetTotalWarningCount returned an error: %v", err))
 		totalWarnings = -1
 	}
 
-	totalKicks, err := bot.StatService.GetTotalKickCount()
+	totalKicks, err := handlers.StatService.GetTotalKickCount()
 	if err != nil {
-		logging.Info("bot/stats.go", fmt.Sprintf("GetTotalKickCount returned an error: %v", err))
+		logging.Info(tag, fmt.Sprintf("GetTotalKickCount returned an error: %v", err))
 		totalKicks = -1
 	}
 
-	totalBans, err := bot.StatService.GetTotalBanCount()
+	totalBans, err := handlers.StatService.GetTotalBanCount()
 	if err != nil {
-		logging.Info("bot/stats.go", fmt.Sprintf("GetTotalBanCount returned an error: %v", err))
+		logging.Info(tag, fmt.Sprintf("GetTotalBanCount returned an error: %v", err))
 		totalBans = -1
 	}
 
