@@ -136,6 +136,7 @@ func setupDatabase() *sql.DB {
 		Duration VARCHAR(6) NOT NULL,
 		Reason VARCHAR(128) NOT NULL,
 		Staff VARCHAR(64) NOT NULL,
+		UnbannedAt INTEGER NOT NULL DEFAULT 0,
 		Timestamp INTEGER NOT NULL
 	)`); err != nil {
 		tx.Rollback()

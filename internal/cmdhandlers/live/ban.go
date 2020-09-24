@@ -9,12 +9,13 @@ import (
 	"github.com/sniddunc/BanLogger/pkg/config"
 	"github.com/sniddunc/BanLogger/pkg/helpers"
 	"github.com/sniddunc/BanLogger/pkg/logging"
+	"github.com/sniddunc/BanLogger/pkg/strdur"
 	"github.com/sniddunc/gcmd"
 )
 
 // BanHandler is the command handler for the ban command
 func (handlers *CommandHandlers) BanHandler(c gcmd.Context) error {
-	const tag = "cmdhandlers.live.KickHandler"
+	const tag = "cmdhandlers.live.BanHandler"
 
 	s := c.Get("session").(*discordgo.Session)
 	m := c.Get("message").(*discordgo.MessageCreate)
@@ -22,12 +23,22 @@ func (handlers *CommandHandlers) BanHandler(c gcmd.Context) error {
 	reason := c.Get("reason").(string)
 	steamID := c.Get("steamID").(string)
 
+	timestamp := time.Now().Unix()
+
+	var unbannedAt int64
+	if duration != "perm" {
+		unbannedAt = timestamp + strdur.GetDuration(duration)
+	} else {
+		unbannedAt = 0
+	}
+
 	ban := banlogger.Ban{
-		PlayerID:  steamID,
-		Duration:  duration,
-		Reason:    reason,
-		Staff:     m.Author.ID,
-		Timestamp: time.Now().Unix(),
+		PlayerID:   steamID,
+		Duration:   duration,
+		Reason:     reason,
+		Staff:      m.Author.ID,
+		UnbannedAt: unbannedAt,
+		Timestamp:  timestamp,
 	}
 
 	err := handlers.BanService.CreateBan(ban)

@@ -1,4 +1,6 @@
-package duration
+package strdur
+
+// String duration package
 
 import (
 	"regexp"

@@ -34,3 +34,8 @@ func (s *BanService) GetBansByPlayerID(playerID string) ([]banlogger.Ban, error)
 
 	return bans, nil
 }
+
+// GetCurrentBans returns an array of all players who are currently banned
+func (s *BanService) GetCurrentBans() ([]banlogger.Ban, error) {
+	return nil, nil
+}

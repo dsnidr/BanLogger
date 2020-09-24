@@ -59,6 +59,14 @@ func (bot *Bot) Setup() (*discordgo.Session, error) {
 	banCommand.Use(bot.ParseBanArgs)
 	cmdBase.Register(banCommand)
 
+	// Register banlist command
+	banlistCommand := gcmd.Command{
+		Name:    "banlist",
+		Usage:   "!banlist",
+		Handler: bot.CommandHandlers.BanListHandler,
+	}
+	cmdBase.Register(banlistCommand)
+
 	// Register lookup command
 	lookupCommand := gcmd.Command{
 		Name:    "lookup",
