@@ -1,4 +1,4 @@
-package tests
+package bot
 
 import (
 	"fmt"
@@ -6,14 +6,13 @@ import (
 	"testing"
 
 	"github.com/sniddunc/BanLogger/internal/banlogger"
-	"github.com/sniddunc/BanLogger/internal/bot"
 	cmdmock "github.com/sniddunc/BanLogger/internal/cmdhandlers/mock"
 	steammock "github.com/sniddunc/BanLogger/internal/steam/mock"
 	"github.com/sniddunc/BanLogger/internal/storage/mock"
 	"github.com/sniddunc/BanLogger/pkg/config"
 )
 
-var testBot bot.Bot
+var testBot Bot
 var warningService banlogger.WarningService
 var kickService banlogger.KickService
 var banService banlogger.BanService
@@ -40,7 +39,7 @@ func init() {
 		SteamService:   steamService,
 	}
 
-	testBot = bot.Bot{
+	testBot = Bot{
 		SteamService:    steamService,
 		CommandHandlers: commandHandlers,
 	}
