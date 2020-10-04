@@ -80,8 +80,6 @@ func (handlers *CommandHandlers) BanListHandler(c gcmd.Context) error {
 			minutesLeft = (ban.UnbannedAt - time.Now().Unix()) / 60
 		}
 
-		fmt.Printf("%s | Now: %d, UnbannedAt: %d\n", summary.ProfileName, time.Now().Unix(), ban.UnbannedAt)
-
 		banSummary := banSummary{
 			PlayerID:    ban.PlayerID,
 			Duration:    ban.Duration,
