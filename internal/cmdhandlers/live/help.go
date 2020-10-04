@@ -23,6 +23,8 @@ func (handlers *CommandHandlers) HelpHandler(c gcmd.Context) error {
 		!lookup <profileURL>
 		!top
 		!stats
+		!banlist
+		Optional flag: -ep
 
 		Valid profileURL formats:
 		https://steamcommunity.com/id/VANITY_URL/
