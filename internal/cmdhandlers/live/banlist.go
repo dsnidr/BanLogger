@@ -1,10 +1,13 @@
 package live
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/sniddunc/BanLogger/pkg/config"
+	"github.com/patrickmn/go-cache"
+	"github.com/sniddunc/BanLogger/internal/banlogger"
+	"github.com/sniddunc/BanLogger/pkg/helpers"
 	"github.com/sniddunc/gcmd"
 )
 
@@ -22,23 +25,42 @@ func (handlers *CommandHandlers) BanListHandler(c gcmd.Context) error {
 
 	banlist := ""
 
-	for _, ban := range currentBans {
-		var currentName string
+	alreadyShown := []string{}
 
-		playerSummary, err := handlers.SteamService.GetUserSummary(ban.PlayerID)
-		if err != nil {
-			currentName = "Could not resolve current name"
+	s.ChannelMessageSend(m.ChannelID, "This might take a minute...")
+
+	for _, ban := range currentBans {
+		if helpers.ContainsString(alreadyShown, ban.PlayerID) {
+			continue
 		}
 
-		currentName = playerSummary.ProfileName
+		// Check if this player's summary is already cached
+		found, cached := handlers.PlayerSummaryCache.Get(ban.PlayerID)
+		if !cached {
+			// If the player's summary isn't cached, resolve it
+			summary, err := handlers.SteamService.GetUserSummary(ban.PlayerID)
+			if err != nil {
+				banlist += "Couldn't resolve player name\n"
+				continue
+			}
 
-		banlist += currentName + "\n"
+			// Cache them
+			handlers.PlayerSummaryCache.Set(ban.PlayerID, summary, cache.DefaultExpiration)
+
+			found = summary
+		}
+
+		summary := found.(banlogger.SteamPlayerSummary)
+
+		banlist += fmt.Sprintf("%s\n%s\n\n", ban.PlayerID, summary.ProfileName)
+
+		alreadyShown = append(alreadyShown, ban.PlayerID)
 	}
 
 	s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
-		Title:       "Banlist",
+		Title:       "Currently banned players",
+		Color:       3434475,
 		Description: banlist,
-		Color:       config.EmbedLookupColour,
 	})
 
 	return nil

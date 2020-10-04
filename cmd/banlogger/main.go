@@ -7,9 +7,11 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/joho/godotenv"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/patrickmn/go-cache"
 	"github.com/sniddunc/BanLogger/internal/bot"
 	"github.com/sniddunc/BanLogger/internal/cmdhandlers/live"
 	steamlive "github.com/sniddunc/BanLogger/internal/steam/live"
@@ -57,11 +59,12 @@ func main() {
 
 	// Bot setup
 	commandHandlers := &live.CommandHandlers{
-		SteamService:   steamService,
-		WarningService: warningService,
-		KickService:    kickService,
-		BanService:     banService,
-		StatService:    statService,
+		SteamService:       steamService,
+		WarningService:     warningService,
+		KickService:        kickService,
+		BanService:         banService,
+		StatService:        statService,
+		PlayerSummaryCache: cache.New(1*time.Hour, 10*time.Minute),
 	}
 
 	bot := bot.Bot{
