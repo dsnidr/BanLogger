@@ -10,5 +10,5 @@ const (
 	EmbedHelpColour    = 9906595
 
 	ReasonMinLen = 1
-	ReasonMaxLen = 128
+	ReasonMaxLen = 256
 )
