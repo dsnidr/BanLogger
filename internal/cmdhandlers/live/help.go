@@ -17,6 +17,7 @@ func (handlers *CommandHandlers) HelpHandler(c gcmd.Context) error {
 		Description: `
 		!help
 		!warn <profileURL> <reason>
+		!mute <profileURL> <duration> <reason>
 		!kick <profileURL> <reason>
 		!ban <profileURL> <duration> <reason>
 		Duration examples: 1min, 3h, 1d, 10w, 1m, 2y, perm
