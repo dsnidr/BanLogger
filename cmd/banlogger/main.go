@@ -50,9 +50,11 @@ func main() {
 	warningService := &sqlite.WarningService{DB: db}
 	kickService := &sqlite.KickService{DB: db}
 	banService := &sqlite.BanService{DB: db}
+	muteService := &sqlite.MuteService{DB: db}
 	statService := &sqlite.StatService{
 		DB:             db,
 		WarningService: warningService,
+		MuteService:    muteService,
 		KickService:    kickService,
 		BanService:     banService,
 	}
@@ -63,6 +65,7 @@ func main() {
 		WarningService:     warningService,
 		KickService:        kickService,
 		BanService:         banService,
+		MuteService:        muteService,
 		StatService:        statService,
 		PlayerSummaryCache: cache.New(1*time.Hour, 10*time.Minute),
 	}
@@ -144,6 +147,20 @@ func setupDatabase() *sql.DB {
 	)`); err != nil {
 		tx.Rollback()
 		log.Fatalf("Could not create Ban table. Error: %v", err)
+	}
+
+	if _, err := tx.Exec(`
+	CREATE TABLE IF NOT EXISTS Mute(
+		ID INTEGER PRIMARY KEY AUTOINCREMENT,
+		PlayerID VARCHAR(17) NOT NULL,
+		Duration VARCHAR(6) NOT NULL,
+		Reason VARCHAR(128) NOT NULL,
+		Staff VARCHAR(64) NOT NULL,
+		UnmutedAt INTEGER NOT NULL DEFAULT 0,
+		Timestamp INTEGER NOT NULL
+	)`); err != nil {
+		tx.Rollback()
+		log.Fatalf("Could not create Mute table. Error: %v", err)
 	}
 
 	tx.Commit()

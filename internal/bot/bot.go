@@ -59,6 +59,15 @@ func (bot *Bot) Setup() (*discordgo.Session, error) {
 	banCommand.Use(bot.ParseBanArgs)
 	cmdBase.Register(banCommand)
 
+	// Register mute command
+	muteCommand := gcmd.Command{
+		Name:    "mute",
+		Usage:   "!mute <profileURL> <reason>",
+		Handler: bot.CommandHandlers.MuteHandler,
+	}
+	muteCommand.Use(bot.ParseMuteArgs)
+	cmdBase.Register(muteCommand)
+
 	// Register banlist command
 	banlistCommand := gcmd.Command{
 		Name:    "banlist",

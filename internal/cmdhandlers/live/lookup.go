@@ -29,9 +29,19 @@ func (handlers *CommandHandlers) LookupHandler(c gcmd.Context) error {
 	}
 
 	// Build record display
+	muteDisplay := ""
 	warningDisplay := ""
 	kickDisplay := ""
 	banDisplay := ""
+
+	if len(record.Mutes) == 0 {
+		muteDisplay = "```No mutes found```"
+	} else {
+		for _, mute := range record.Mutes {
+			timestamp := helpers.GetTimestamp(mute.Timestamp)
+			muteDisplay += fmt.Sprintf("```ID: %-4d        %s\n> %s```", mute.ID, timestamp, mute.Reason)
+		}
+	}
 
 	if len(record.Warnings) == 0 {
 		warningDisplay = "```No warnings found```"
@@ -60,7 +70,7 @@ func (handlers *CommandHandlers) LookupHandler(c gcmd.Context) error {
 		}
 	}
 
-	recordDisplay := fmt.Sprintf("**Warnings:**\n%s\n**Kicks:**:\n%s\n**Bans:**\n%s\n", warningDisplay, kickDisplay, banDisplay)
+	recordDisplay := fmt.Sprintf("**Warnings:**\n%s\n**Mutes:**:\n%s\n**Kicks:**:\n%s\n**Bans:**\n%s\n", warningDisplay, muteDisplay, kickDisplay, banDisplay)
 	s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
 		Title:       "Showing " + summary.ProfileName + "'s record",
 		Color:       3434475,

@@ -11,9 +11,10 @@ import (
 // We take in a StatService instead of attaching this function on an implementation by implementation basis
 // because this function relies on any implementation, and requires no special treatment itself.
 func GetInfractionString(statService banlogger.StatService, playerID string) string {
+	muteCount, _ := statService.GetMuteCount(playerID)
 	warningCount, _ := statService.GetWarningCount(playerID)
 	kickCount, _ := statService.GetKickCount(playerID)
 	banCount, _ := statService.GetBanCount(playerID)
 
-	return fmt.Sprintf("Warnings: %d, Kicks: %d, Bans: %d", warningCount, kickCount, banCount)
+	return fmt.Sprintf("Warnings: %d, Mutes: %d, Kicks: %d, Bans: %d", warningCount, muteCount, kickCount, banCount)
 }

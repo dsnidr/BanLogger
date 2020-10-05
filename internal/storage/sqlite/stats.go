@@ -13,8 +13,14 @@ import (
 type StatService struct {
 	DB             *sql.DB
 	WarningService banlogger.WarningService
+	MuteService    banlogger.MuteService
 	KickService    banlogger.KickService
 	BanService     banlogger.BanService
+}
+
+// GetMuteCount returns the number of mutes this user has received
+func (s *StatService) GetMuteCount(playerID string) (int, error) {
+	return getCountForPlayer(s.DB, "Mute", playerID)
 }
 
 // GetWarningCount returns the number of warnings this user has received
@@ -30,6 +36,11 @@ func (s *StatService) GetKickCount(playerID string) (int, error) {
 // GetBanCount returns the number of bans this user has received
 func (s *StatService) GetBanCount(playerID string) (int, error) {
 	return getCountForPlayer(s.DB, "Ban", playerID)
+}
+
+// GetTotalMuteCount returns the total number of mutes recorded
+func (s *StatService) GetTotalMuteCount() (int, error) {
+	return getTotalCount(s.DB, "Mute")
 }
 
 // GetTotalWarningCount returns the total number of warnings recorded
@@ -49,6 +60,11 @@ func (s *StatService) GetTotalBanCount() (int, error) {
 
 // GetRecord retrieves a list of all offenses recorded for a player
 func (s *StatService) GetRecord(playerID string) (banlogger.Record, error) {
+	mutes, err := s.MuteService.GetMutesByPlayerID(playerID)
+	if err != nil {
+		return banlogger.Record{}, err
+	}
+
 	warnings, err := s.WarningService.GetWarningsByPlayerID(playerID)
 	if err != nil {
 		return banlogger.Record{}, err
@@ -67,13 +83,14 @@ func (s *StatService) GetRecord(playerID string) (banlogger.Record, error) {
 	record := banlogger.Record{
 		PlayerID: playerID,
 		Warnings: warnings,
+		Mutes:    mutes,
 		Kicks:    kicks,
 		Bans:     bans,
 	}
 
 	logging.Info("sqlite/stats.go",
-		fmt.Sprintf("Record retrieved for player %s.\n\tWarnings: %d | Kicks: %d | Bans: %d",
-			playerID, len(record.Warnings), len(record.Kicks), len(record.Bans)))
+		fmt.Sprintf("Record retrieved for player %s.\n\tWarnings: %d | Mutes: %d | Kicks: %d | Bans: %d",
+			playerID, len(record.Warnings), len(record.Mutes), len(record.Kicks), len(record.Bans)))
 
 	return record, nil
 }

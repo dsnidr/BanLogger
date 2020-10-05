@@ -12,6 +12,7 @@ type CommandHandlers struct {
 	WarningService     banlogger.WarningService
 	KickService        banlogger.KickService
 	BanService         banlogger.BanService
+	MuteService        banlogger.MuteService
 	StatService        banlogger.StatService
 	PlayerSummaryCache *cache.Cache
 }

@@ -9,4 +9,5 @@ type CommandHandlers struct {
 	WarningService banlogger.WarningService
 	KickService    banlogger.KickService
 	BanService     banlogger.BanService
+	MuteService    banlogger.MuteService
 }

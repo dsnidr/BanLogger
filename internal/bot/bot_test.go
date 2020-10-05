@@ -16,6 +16,7 @@ var testBot Bot
 var warningService banlogger.WarningService
 var kickService banlogger.KickService
 var banService banlogger.BanService
+var muteService banlogger.MuteService
 var steamService banlogger.SteamService
 
 var testWarnCommands map[string]bool
@@ -30,12 +31,16 @@ func init() {
 	banService = &mock.BanService{
 		Bans: []banlogger.Ban{},
 	}
+	muteService = &mock.MuteService{
+		Mutes: []banlogger.Mute{},
+	}
 	steamService = &steammock.SteamService{}
 
 	commandHandlers := &cmdmock.CommandHandlers{
 		WarningService: warningService,
 		KickService:    kickService,
 		BanService:     banService,
+		MuteService:    muteService,
 		SteamService:   steamService,
 	}
 

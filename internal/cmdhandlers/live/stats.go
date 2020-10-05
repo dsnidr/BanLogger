@@ -16,6 +16,12 @@ func (handlers *CommandHandlers) StatsHandler(c gcmd.Context) error {
 	s := c.Get("session").(*discordgo.Session)
 	m := c.Get("message").(*discordgo.MessageCreate)
 
+	totalMutes, err := handlers.StatService.GetTotalMuteCount()
+	if err != nil {
+		logging.Info(tag, fmt.Sprintf("GetTotalMuteCount returned an error: %v", err))
+		totalMutes = -1
+	}
+
 	totalWarnings, err := handlers.StatService.GetTotalWarningCount()
 	if err != nil {
 		logging.Info(tag, fmt.Sprintf("GetTotalWarningCount returned an error: %v", err))
@@ -39,9 +45,10 @@ func (handlers *CommandHandlers) StatsHandler(c gcmd.Context) error {
 		Color: config.EmbedHelpColour,
 		Description: fmt.Sprintf(`
 		Total Warnings: %d
+		Total Mutes: %d
 		Total Kicks: %d
 		Total Bans: %d
-		`, totalWarnings, totalKicks, totalBans),
+		`, totalWarnings, totalMutes, totalKicks, totalBans),
 	})
 
 	return nil
